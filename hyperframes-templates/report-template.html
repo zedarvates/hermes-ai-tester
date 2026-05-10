@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0f; overflow: hidden; font-family: 'Inter', sans-serif; }
+    #stage {
+      width: 1920px; height: 1080px;
+      position: relative;
+      background: radial-gradient(ellipse at 50% 30%, #1a1a2e 0%, #0a0a0f 70%);
+      overflow: hidden;
+    }
+    .frame-img {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      background: #0a0a0f;
+    }
+    .timestamp {
+      position: absolute; bottom: 30px; right: 40px;
+      font-family: 'Inter', monospace; font-size: 18px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 2px;
+    }
+    .watermark {
+      position: absolute; bottom: 30px; left: 40px;
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      color: rgba(124,58,237,0.3);
+      letter-spacing: 2px;
+    }
+    .progress-bar {
+      position: absolute; bottom: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, #7c3aed, #f59e0b);
+    }
+    .overlay-text {
+      position: absolute; top: 40px; left: 0; width: 100%;
+      text-align: center;
+      font-family: 'Inter', sans-serif; font-size: 22px;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="stage" data-composition-id="report-root" data-start="0" data-duration="30" data-width="1920" data-height="1080">
+    <!-- Audio: narration + music -->
+    <audio id="narration" data-start="2" data-duration="26" data-track-index="0" data-volume="1.0" src="narration.wav"></audio>
+    
+    <!-- Frames will be injected dynamically -->
+    <img id="frame-0" class="frame-img" data-start="0" data-duration="2" data-track-index="1" src="frame_0000.png" />
+    <img id="frame-1" class="frame-img" data-start="2" data-duration="2" data-track-index="2" src="frame_0001.png" />
+    <img id="frame-2" class="frame-img" data-start="4" data-duration="2" data-track-index="3" src="frame_0002.png" />
+    
+    <div class="timestamp">00:00</div>
+    <div class="watermark">✦ AI TESTER</div>
+    <div class="progress-bar" style="width:0%;"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Fade in first frame
+    tl.from("#frame-0", { opacity: 0, duration: 0.4, ease: "power2.out" }, 0.3);
+    
+    // Fade transition between frames
+    tl.to("#frame-0", { opacity: 0, duration: 0.3, ease: "power2.in" }, 1.7);
+    tl.from("#frame-1", { opacity: 0, duration: 0.3, ease: "power2.out" }, 2.0);
+    
+    tl.to("#frame-1", { opacity: 0, duration: 0.3, ease: "power2.in" }, 3.7);
+    tl.from("#frame-2", { opacity: 0, duration: 0.3, ease: "power2.out" }, 4.0);
+
+    // Update timestamp
+    tl.call(() => {
+      document.querySelector('.timestamp').textContent = '00:02';
+    }, [], 2.0);
+    tl.call(() => {
+      document.querySelector('.timestamp').textContent = '00:04';
+    }, [], 4.0);
+
+    // Progress bar
+    tl.to(".progress-bar", { width: "100%", duration: 30, ease: "none" }, 0);
+
+    window.__timelines["report-root"] = tl;
+  </script>
+</body>
+</html>

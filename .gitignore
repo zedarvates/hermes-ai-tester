@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+*.pyc
+.env
+reports/*
+!reports/.gitkeep
+captures/
+*.mp4
+*.wav
+*.webm
+.DS_Store

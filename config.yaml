@@ -1,0 +1,17 @@
+# Ai Tester
+
+# App to test
+app: "https://github.com/zedarvates/StoryCore-Engine"
+
+# Test settings
+duration: 60          # seconds
+interval: 0.3         # seconds between screenshots
+voice: "af_nova"      # TTS voice (af_nova=american female, am_michael=american male)
+
+# GitHub issue settings
+labels:
+  - bug
+  - ai-tester
+
+# Report settings
+output: "./reports"
