@@ -1,12 +1,12 @@
 # 🤖 AI Tester — Automated Video Bug Reports
 
-**An AI agent that tests any software, records the screen, and produces a narrated video report.**
+**An AI agent that tests any software, records the screen, and produces a narrated video report using HyperFrames.**
 
 No complex setup. No GPU needed. Just clone, run, get a video.
 
 ```
 ┌─────────────────────────────────────────────┐
-│         AI TESTER PIPELINE                   │
+│         AI TESTER PIPELINE v2               │
 ├─────────────────────────────────────────────┤
 │                                              │
 │  1️⃣  AGENT EXPLORE                         │
@@ -19,11 +19,11 @@ No complex setup. No GPU needed. Just clone, run, get a video.
 │     Record each step with timestamp          │
 │     Capture error logs                       │
 │                                              │
-│  3️⃣  GENERATE VIDEO REPORT                   │
-│     Stitch screenshots → HyperFrames video   │
-│     Add TTS narration (English)              │
-│     "What works / What doesn't"              │
-│     Background music with ducking            │
+│  3️⃣  GENERATE (HyperFrames v0.6+)           │
+│     TTS narration (LocalAI or cloud)         │
+│     HTML template with GSAP animations       │
+│     Lint → Render → MP4                     │
+│     Deterministic output                     │
 │                                              │
 │  4️⃣  SUBMIT                                   │
 │     Create GitHub Issue with video           │
@@ -36,64 +36,123 @@ No complex setup. No GPU needed. Just clone, run, get a video.
 ## ✨ Features
 
 - 🧪 **Autonomous testing** — agent navigates & tests your app
-- 🎬 **Video reports** — narrated bug reports with screen recording
-- 🗣️ **TTS narration** — explains what works and what doesn't
-- 🐛 **GitHub Issues** — auto-creates issues with video evidence
-- 📦 **Zero GPU** — uses HyperFrames (HTML + GSAP), no rendering farm needed
-- 🔌 **Works on anything** — web apps, desktop apps, CLI tools
+- 🎬 **Video reports** — narrated bug reports with screen recording via HyperFrames
+- 🗣️ **TTS narration** — LocalAI (EUREKAI, GPU) or HyperFrames cloud TTS
+- 🎨 **GSAP animations** — smooth fade transitions between frames
+- ✅ **Deterministic** — same input = same MP4 (CI/CD ready)
+- 🔍 **Linting** — automatic HTML validation before render
+- 🖥️ **Works on any software** — web apps, desktop apps, mobile via ADB
 
 ## 🚀 Quick Start
 
 ```bash
-# Clone
-git clone https://github.com/zedarvates/ai-tester.git
-cd ai-tester
+# 1. Test an app
+python scripts/test_app.py --app https://example.com --duration 60
 
-# Install HyperFrames
-npm install -g hyperframes
+# 2. Generate video report (with LocalAI TTS on EUREKAI)
+python scripts/generate_report.py \
+  --captures ./screenshots \
+  --narration "Test report: all features working" \
+  --output report.mp4 \
+  --localai
 
-# Run a test
-python3 scripts/test_app.py --url https://yourapp.com --duration 60
+# 3. Create GitHub Issue
+python scripts/create_issue.py --repo owner/repo --video report.mp4
 ```
 
-## 📂 Structure
-
-```
-ai-tester/
-├── scripts/
-│   ├── test_app.py          # Main test orchestrator
-│   ├── capture_screen.py    # Screen capture (PyAutoGUI)
-│   ├── generate_report.py   # Generate video report from captures
-│   └── create_issue.py      # Submit GitHub issue with video
-├── hyperframes-templates/
-│   ├── report-template.html  # HyperFrames video template
-│   └── narration-template.txt
-├── reports/                  # Generated reports go here
-├── config.yaml               # Test configuration
-└── DESIGN.md                 # Visual identity
-```
-
-## 🧪 Example
+### Pipeline Steps
 
 ```bash
-# Test a web app
-python3 scripts/test_app.py \
-  --url https://storycore-engine-demo.vercel.app \
-  --steps "login, create project, export video" \
-  --narration "Testing the video export feature"
+# Full pipeline in one shot
+python scripts/generate_report.py \
+  --captures ./captures \
+  --narration ./transcript.txt \
+  --voice af_nova \
+  --fps 3 \
+  --output ./reports/test-run-001.mp4 \
+  --localai
 ```
 
-## 🛠️ Requirements
+### Without LocalAI (cloud TTS)
 
-- Node.js ≥ 22
-- Python 3.10+
-- HyperFrames: `npm install -g hyperframes`
-- Windows (for desktop app testing) or any OS (for web testing)
+```bash
+python scripts/generate_report.py \
+  --captures ./captures \
+  --narration "Everything works" \
+  --output report.mp4
+```
 
-## 📄 License
+## 📋 Requirements
 
-MIT — free to use, modify, share. Go build better software.
+- **Node.js ≥ 22** (for HyperFrames CLI)
+- **FFmpeg** (in PATH)
+- **Python 3.11+**
+- LocalAI on EUREKAI (192.168.1.47:8080) for local TTS — or cloud TTS
 
----
+## 🏗️ Architecture
 
-*Built with ❤️ by [Sylvain Galliez](https://github.com/zedarvates)*
+```
+test_app.py → captures screenshots
+  ↓
+generate_report.py
+  ├── Step 1: npx hyperframes init (creates project)
+  ├── Step 2: TTS generation (LocalAI or cloud)
+  ├── Step 3: HTML template generation (frame images + GSAP)
+  ├── Step 4: npm run check (linting)
+  ├── Step 5: npm run render (→ MP4)
+  └── Output: report.mp4
+  ↓
+create_issue.py → GitHub issue with video attachment
+```
+
+## 🎨 Template
+
+Le template HTML utilise les conventions HyperFrames v0.6+ :
+- `class="clip"` sur tous les éléments temporisés
+- `data-composition-id`, `data-start`, `data-duration`, `data-track-index`
+- GSAP timeline avec `paused: true` enregistrée sur `window.__timelines`
+- Déterministe — pas de `Date.now()` / `Math.random()`
+
+Voir `hyperframes-templates/report-template.html`.
+
+## 🗣️ TTS Voices
+
+| Voice | Gender | Source |
+|-------|--------|--------|
+| `af_nova` | Female (American) | HyperFrames / Piper |
+| `am_michael` | Male (American) | HyperFrames / Piper |
+| `nova` | Female (neutral) | LocalAI (OpenAI-compatible) |
+| `onyx` | Male (neutral) | LocalAI (OpenAI-compatible) |
+| `alloy` | Neutral | LocalAI (OpenAI-compatible) |
+
+## 🔧 Configuration
+
+Voir `config.yaml` :
+```yaml
+app: "https://github.com/user/repo"
+duration: 60
+interval: 0.3
+voice: "af_nova"
+output: "./reports"
+```
+
+## 📁 Structure
+
+```
+├── scripts/
+│   ├── test_app.py          # Agent exploration & screenshot capture
+│   ├── generate_report.py   # HyperFrames video generation (v2, full pipeline)
+│   └── create_issue.py      # GitHub issue creation
+├── hyperframes-templates/
+│   └── report-template.html # GSAP-animated report template
+├── avatars/                 # AI avatar assets (optional)
+├── config.yaml              # Configuration
+└── README.md
+```
+
+## 🔗 Related
+
+- [HyperFrames](https://hyperframes.heygen.com) — HTML-to-Video framework
+- [Hermes Agent](https://github.com/zedarvates/hermes-agent) — AI orchestrator
+- [StoryCore Engine](https://github.com/zedarvates/StoryCore-Engine) — Video story engine
+- [Hnoss Vtuber](https://github.com/zedarvates/hnoss-vtuber) — AI avatar pipeline

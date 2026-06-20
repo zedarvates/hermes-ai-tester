@@ -46,13 +46,13 @@
 </head>
 <body>
   <div id="stage" data-composition-id="report-root" data-start="0" data-duration="30" data-width="1920" data-height="1080">
-    <!-- Audio: narration + music -->
-    <audio id="narration" data-start="2" data-duration="26" data-track-index="0" data-volume="1.0" src="narration.wav"></audio>
+    <!-- Audio: narration -->
+    <audio class="clip" id="narration" data-start="2" data-duration="26" data-track-index="0" data-volume="1.0" src="narration.wav"></audio>
     
-    <!-- Frames will be injected dynamically -->
-    <img id="frame-0" class="frame-img" data-start="0" data-duration="2" data-track-index="1" src="frame_0000.png" />
-    <img id="frame-1" class="frame-img" data-start="2" data-duration="2" data-track-index="2" src="frame_0001.png" />
-    <img id="frame-2" class="frame-img" data-start="4" data-duration="2" data-track-index="3" src="frame_0002.png" />
+    <!-- Frames injected dynamically — MUST have class="clip" + data-* attributes -->
+    <img class="clip frame-img" id="frame-0" data-start="0" data-duration="2" data-track-index="1" src="frame_0000.png" />
+    <img class="clip frame-img" id="frame-1" data-start="2" data-duration="2" data-track-index="2" src="frame_0001.png" />
+    <img class="clip frame-img" id="frame-2" data-start="4" data-duration="2" data-track-index="3" src="frame_0002.png" />
     
     <div class="timestamp">00:00</div>
     <div class="watermark">✦ AI TESTER</div>
