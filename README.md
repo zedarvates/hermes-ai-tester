@@ -156,3 +156,8 @@ output: "./reports"
 - [Hermes Agent](https://github.com/zedarvates/hermes-agent) — AI orchestrator
 - [StoryCore Engine](https://github.com/zedarvates/StoryCore-Engine) — Video story engine
 - [Hnoss Vtuber](https://github.com/zedarvates/hnoss-vtuber) — AI avatar pipeline
+
+
+---
+
+[![Donate](https://img.shields.io/badge/☕%20Soutenir-BTC%20%7C%20ETH-orange)](DONATE.md)
